@@ -2,12 +2,16 @@
 #include "LD37_OneRoom.h"
 #include "LD37_OneRoomGameMode.h"
 #include "Room.h"
+#include "Log.h"
+#include "FirstPersonPlayer.h"
+#include "GoalButtonPanel.h"
 
 const int AOneRoomGameMode::s_cROOM_COUNT = 3;
 
 AOneRoomGameMode::AOneRoomGameMode( const FObjectInitializer& foi )
 {
-	InitialiseQueue();
+	//PlayerControllerClass = 
+	DefaultPawnClass = AFirstPersonPlayer::StaticClass();
 }
 
 AOneRoomGameMode::~AOneRoomGameMode( void )
@@ -55,13 +59,26 @@ void AOneRoomGameMode::InitRoom( void )
 {
 	//FActorSpawnParameters spawnDesc;
 	//m_pRoomObj = GetWorld()->SpawnActor<ARoom>( ARoom::StaticClass(), spawnDesc );
+	
 	for ( TActorIterator<ARoom> ActorItr( GetWorld() ); ActorItr; ++ActorItr )
 	{
-		ARoom* curActor = *ActorItr;
-		if ( curActor->GetName() == TEXT( "Room" ) )
-		{
-			m_pRoomObj = ( ARoom* )curActor;
-		}
+		m_pRoomObj = *ActorItr;
+	}
+
+	for( TActorIterator<AGoalButtonPanel> ActorItr( GetWorld() ); ActorItr; ++ActorItr )
+	{
+		m_pGoal = *ActorItr;
+	}
+
+	for( TActorIterator<AFirstPersonPlayer> ActorItr( GetWorld() ); ActorItr; ++ActorItr )
+	{
+		m_pPlayer = *ActorItr;
+		m_pPlayer->SetGoal( m_pGoal );
+	}
+
+	if ( !m_pPlayer || !m_pGoal || !m_pRoomObj )
+	{
+		Log::LogStr( "Error: Missing object player, goal, or room in scene" );
 	}
 
 	if ( m_pRoomObj )
@@ -73,5 +90,6 @@ void AOneRoomGameMode::InitRoom( void )
 void AOneRoomGameMode::StartPlay()
 {
 	Super::StartPlay();
+	InitialiseQueue();
 	InitRoom();
 }

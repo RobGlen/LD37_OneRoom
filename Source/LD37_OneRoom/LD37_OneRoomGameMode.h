@@ -31,6 +31,7 @@ struct Room
 	float timeLimit;
 };
 
+class AFirstPersonPlayer;
 
 /**
  * 
@@ -42,15 +43,18 @@ class LD37_ONEROOM_API AOneRoomGameMode : public AGameMode
 private:
 	static const int s_cROOM_COUNT;
 	ARoom* m_pRoomObj = nullptr;
+	AActor* m_pGoal = nullptr;
+	AFirstPersonPlayer* m_pPlayer = nullptr;
+
 	std::queue<Room> m_rooms;
 	float m_timeLimit;
 
 	void InitialiseQueue( void );
-	void GenerateRoom( void );
 	void InitRoom( void );
 
 public:
 	AOneRoomGameMode( const FObjectInitializer& foi );
 	~AOneRoomGameMode( void );
 	virtual void StartPlay() override;
+	void GenerateRoom( void );
 };

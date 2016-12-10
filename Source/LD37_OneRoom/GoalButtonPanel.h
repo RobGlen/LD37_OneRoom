@@ -3,23 +3,16 @@
 #pragma once
 
 #include "GameFramework/Actor.h"
-#include "Room.generated.h"
-
-struct Room;
+#include "GoalButtonPanel.generated.h"
 
 UCLASS()
-class LD37_ONEROOM_API ARoom : public AActor
+class LD37_ONEROOM_API AGoalButtonPanel : public AActor
 {
 	GENERATED_BODY()
-private:
-	bool m_updateScale;
-	FVector m_currentScale;
-	FVector m_scaleTarget;
-	float m_lerpSpeed;
-
+	
 public:	
 	// Sets default values for this actor's properties
-	ARoom();
+	AGoalButtonPanel();
 
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -27,5 +20,6 @@ public:
 	// Called every frame
 	virtual void Tick( float DeltaSeconds ) override;
 
-	void InitRoom( const Room& roomDesc );
+	
+	
 };
