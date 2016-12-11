@@ -3,13 +3,17 @@
 #pragma once
 
 #include "GameFramework/Actor.h"
+#include "RoomActor.h"
+
 #include "GoalButtonPanel.generated.h"
 
 UCLASS()
-class LD37_ONEROOM_API AGoalButtonPanel : public AActor
+class LD37_ONEROOM_API AGoalButtonPanel : public ARoomActor
 {
 	GENERATED_BODY()
+private:
 	
+
 public:	
 	// Sets default values for this actor's properties
 	AGoalButtonPanel();
@@ -19,7 +23,4 @@ public:
 	
 	// Called every frame
 	virtual void Tick( float DeltaSeconds ) override;
-
-	
-	
 };

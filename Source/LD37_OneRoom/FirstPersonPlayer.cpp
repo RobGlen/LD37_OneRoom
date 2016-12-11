@@ -4,10 +4,17 @@
 #include "FirstPersonPlayer.h"
 #include "Room.h"
 #include "LD37_OneRoomGameMode.h"
+#include "Log.h"
 
 AFirstPersonPlayer::AFirstPersonPlayer( const FObjectInitializer& foi )
 {
-
+	PrimaryActorTick.bCanEverTick = true;
+	m_updateLocation = false;
+	m_currentLocation = GetActorLocation();
+	m_targetLocation = GetActorLocation();
+	m_lerpSpeed = 2.0f;
+	m_timeLerped = 0.0f;
+	m_timeToLerp = m_lerpSpeed;
 }
 
 void AFirstPersonPlayer::BeginPlay()
@@ -24,6 +31,35 @@ void AFirstPersonPlayer::SetupPlayerInputComponent( class UInputComponent* Input
 	InputComponent->BindAction( "Jump", IE_Pressed, this, &AFirstPersonPlayer::OnStartJump );
 	InputComponent->BindAction( "Jump", IE_Released, this, &AFirstPersonPlayer::OnStopJump );
 	InputComponent->BindAction( "Interact", IE_Pressed, this, &AFirstPersonPlayer::TestGoal );
+}
+
+void AFirstPersonPlayer::RoomChange( const Room& roomDesc )
+{
+	m_updateLocation = true;
+	SetActorEnableCollision( false );
+	m_currentLocation = GetActorLocation();
+	m_targetLocation = roomDesc.startPoint;
+	m_timeLerped = 0.0f;
+	m_timeToLerp = m_lerpSpeed;
+}
+
+void AFirstPersonPlayer::Tick( float DeltaTime )
+{
+	Super::Tick( DeltaTime );
+
+	if ( m_updateLocation )
+	{
+		SetActorLocation( m_currentLocation );
+		m_timeLerped += DeltaTime;
+		m_currentLocation = FMath::Lerp( m_currentLocation, m_targetLocation, m_timeLerped / m_timeToLerp );
+		
+		if ( ( m_targetLocation - m_currentLocation ).Size() <= 0.2f )
+		{
+			Log::LogStr( "Lerp successful" );
+			m_updateLocation = false;
+			SetActorEnableCollision( true );
+		}
+	}
 }
 
 void AFirstPersonPlayer::MoveForward( float speed )
@@ -69,22 +105,27 @@ void AFirstPersonPlayer::OnStopJump( void )
 
 void AFirstPersonPlayer::TestGoal( void )
 {
+	Log::LogStr( "Interacting" );
+	
 	if ( m_pGoal )
 	{
+		Log::LogStr( "Goal exists" );
 		FVector goalPos = m_pGoal->GetActorLocation();
 		FVector pos = GetActorLocation();
 		FVector delta = goalPos - pos;
-
-		if ( delta.Size() <= 0.5f )
+		
+		UE_LOG( DebugLog, Log, TEXT( "%f" ), delta.Size() );
+		if ( delta.Size() <= 120.0f )
 		{
 			delta.Normalize();
 			float dot = FVector::DotProduct( GetActorForwardVector(), delta );
-
+			Log::LogStr( "Close to button" );
 			if ( dot > 0.0f )
 			{
 				//m_pRoom->GenerateRoom();
 				AOneRoomGameMode* p_gamemode = ( AOneRoomGameMode* )( GetWorld()->GetAuthGameMode() );
 				p_gamemode->GenerateRoom();
+				Log::LogStr( "Generating next room" );
 			}
 		}
 	}

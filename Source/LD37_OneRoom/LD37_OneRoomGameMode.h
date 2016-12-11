@@ -7,8 +7,6 @@
 #include "GameFramework/GameMode.h"
 #include "LD37_OneRoomGameMode.generated.h"
 
-class ARoom;
-
 enum ObstacleType
 {
 	OBJSTACLETYPE_BOX, OBJSTACLETYPE_TURRET, 
@@ -31,8 +29,9 @@ struct Room
 	float timeLimit;
 };
 
+class ARoom;
 class AFirstPersonPlayer;
-
+class AGoalButtonPanel;
 /**
  * 
  */
@@ -43,7 +42,7 @@ class LD37_ONEROOM_API AOneRoomGameMode : public AGameMode
 private:
 	static const int s_cROOM_COUNT;
 	ARoom* m_pRoomObj = nullptr;
-	AActor* m_pGoal = nullptr;
+	AGoalButtonPanel* m_pGoal = nullptr;
 	AFirstPersonPlayer* m_pPlayer = nullptr;
 
 	std::queue<Room> m_rooms;

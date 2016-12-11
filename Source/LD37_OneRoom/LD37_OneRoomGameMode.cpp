@@ -24,20 +24,20 @@ void AOneRoomGameMode::InitialiseQueue( void )
 	Room rooms[s_cROOM_COUNT];
 	rooms[0].startPoint = 	FVector( 0.0f, 0.0f, 0.0f );
 	rooms[0].orientation = 	FRotator( 0.0f, 0.0f, 0.0f );
-	rooms[0].endPoint = 	FVector( 0.0f, 5.0f, 0.0f );
+	rooms[0].endPoint = 	FVector( 300.0f, 0.0f, -200.0f );
 	rooms[0].scale = 		FVector( 10.0f, 10.0f, 5.0f );
 	rooms[0].timeLimit = 	12.0f;
 
-	rooms[1].startPoint = 	FVector( -18.0f, -18.0f, 0.0f );
+	rooms[1].startPoint = 	FVector( -500.0f, -500.0f, -100.0f );
 	rooms[1].orientation = 	FRotator( 0.0f, 0.0f, 0.0f );
-	rooms[1].endPoint = 	FVector( 18.0f, 18.0f, 0.0f );
+	rooms[1].endPoint = 	FVector( 500.0f, 500.0f, -200.0f );
 	rooms[1].scale = 		FVector( 20.0f, 20.0f, 5.0f );
 	rooms[1].timeLimit = 	12.0f;
 
-	rooms[2].startPoint = 	FVector( 0.0f, 0.0f, 0.0f );
+	rooms[2].startPoint = 	FVector( 0.0f, 0.0f, 1000.0f );
 	rooms[2].orientation = 	FRotator( 0.0f, 0.0f, 0.0f );
-	rooms[2].endPoint = 	FVector( 0.0f, 5.0f, 0.0f );
-	rooms[2].scale = 		FVector( 10.0f, 10.0f, 5.0f );
+	rooms[2].endPoint = 	FVector( 0.0f, 0.0f, -1950.0f );
+	rooms[2].scale = 		FVector( 5.0f, 5.0f, 40.0f );
 	rooms[2].timeLimit = 	20.0f;
 
 	for ( unsigned int i = 0; i < s_cROOM_COUNT; ++i )
@@ -48,10 +48,18 @@ void AOneRoomGameMode::InitialiseQueue( void )
 
 void AOneRoomGameMode::GenerateRoom( void )
 {
-	Room& nextRoom = m_rooms.front();
-	m_pRoomObj->InitRoom( nextRoom );
-	m_timeLimit = nextRoom.timeLimit;
+	if ( m_rooms.empty() )
+	{
+		return;
+	}
 
+	Room& nextRoom = m_rooms.front();
+	//m_pRoomObj->InitRoom( nextRoom );
+	m_pRoomObj->UpdateScale( nextRoom.scale );
+	m_timeLimit = nextRoom.timeLimit;
+	m_pPlayer->RoomChange( nextRoom );
+	m_pGoal->UpdateLocation( nextRoom.endPoint );
+	//m_pGoal->RoomChange( true, false, nextRoom.endPoint, FVector( 0.0f, 0.0f, 0.0f ) );
 	m_rooms.pop();
 }
 
@@ -78,13 +86,24 @@ void AOneRoomGameMode::InitRoom( void )
 
 	if ( !m_pPlayer || !m_pGoal || !m_pRoomObj )
 	{
-		Log::LogStr( "Error: Missing object player, goal, or room in scene" );
+		if ( !m_pPlayer )
+		{
+			Log::LogStr( "Error: Missing object player in scene" );
+		}
+
+		if( !m_pGoal )
+		{
+			Log::LogStr( "Error: Missing object goal in scene" );
+		}
+
+		if ( !m_pRoomObj )
+		{
+			Log::LogStr( "Error: Missing object room in scene" );
+		}
+		return;
 	}
 
-	if ( m_pRoomObj )
-	{
-		GenerateRoom();
-	}
+	GenerateRoom();
 }
 
 void AOneRoomGameMode::StartPlay()

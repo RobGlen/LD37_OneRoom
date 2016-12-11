@@ -3,19 +3,16 @@
 #pragma once
 
 #include "GameFramework/Actor.h"
+#include "RoomActor.h"
 #include "Room.generated.h"
 
 struct Room;
 
 UCLASS()
-class LD37_ONEROOM_API ARoom : public AActor
+class LD37_ONEROOM_API ARoom : public ARoomActor
 {
 	GENERATED_BODY()
 private:
-	bool m_updateScale;
-	FVector m_currentScale;
-	FVector m_scaleTarget;
-	float m_lerpSpeed;
 
 public:	
 	// Sets default values for this actor's properties
@@ -26,6 +23,4 @@ public:
 	
 	// Called every frame
 	virtual void Tick( float DeltaSeconds ) override;
-
-	void InitRoom( const Room& roomDesc );
 };

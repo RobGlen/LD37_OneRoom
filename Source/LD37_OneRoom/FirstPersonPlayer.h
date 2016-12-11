@@ -5,6 +5,7 @@
 #include "GameFramework/Character.h"
 #include "FirstPersonPlayer.generated.h"
 
+struct Room;
 /**
  * 
  */
@@ -17,10 +18,19 @@ private:
 	AActor* m_pGoal = nullptr;
 	//ARoom* m_pRoom = nullptr;
 
+	bool m_updateLocation;
+	FVector m_currentLocation;
+	FVector m_targetLocation;
+	float m_lerpSpeed;
+	float m_timeLerped;
+	float m_timeToLerp;
 public:
 	AFirstPersonPlayer( const FObjectInitializer& ObjectInitializer );
 	virtual void BeginPlay() override;
 	virtual void SetupPlayerInputComponent(class UInputComponent* InputComponent) override;
+
+	void RoomChange( const Room& roomDesc );
+	virtual void Tick( float DeltaSeconds ) override;
 
 	void MoveForward( float speed );
 	void MoveRight( float speed );
@@ -28,5 +38,7 @@ public:
 	void OnStopJump( void );
 	void TestGoal( void );
 	//void SetRoom( ARoom* p_room ) { m_pRoom = p_room; }
+	
 	void SetGoal( AActor* p_goal ) { m_pGoal = p_goal; }
+	
 };
