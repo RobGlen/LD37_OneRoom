@@ -12,7 +12,6 @@ class LD37_ONEROOM_API AGoalButtonPanel : public ARoomActor
 {
 	GENERATED_BODY()
 private:
-	
 
 public:	
 	// Sets default values for this actor's properties

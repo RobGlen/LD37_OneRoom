@@ -17,7 +17,6 @@ AGoalButtonPanel::AGoalButtonPanel()
 void AGoalButtonPanel::BeginPlay()
 {
 	Super::BeginPlay();
-	
 }
 
 // Called every frame
@@ -25,5 +24,6 @@ void AGoalButtonPanel::Tick( float DeltaTime )
 {
 	Super::Tick( DeltaTime );
 	LerpLocation( DeltaTime );
+	
 }
 

@@ -69,7 +69,7 @@ void ARoomActor::Lerp( FVector& current, FVector& target, bool& update, float De
 {
 	current = FMath::Lerp( current, target, m_lerpSpeed * DeltaTime );
 	
-	UE_LOG( DebugLog, Log, TEXT( "current: %f,%f,%f. target: %f,%f,%f." ), current.X, current.Y, current.Z, target.X, target.Y, target.Z );
+	//UE_LOG( DebugLog, Log, TEXT( "current: %f,%f,%f. target: %f,%f,%f." ), current.X, current.Y, current.Z, target.X, target.Y, target.Z );
 	if ( ( target - current ).Size() <= 0.2f )
 	{
 		Log::LogStr( "Lerp successful" );

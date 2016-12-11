@@ -5,6 +5,7 @@
 #include "Room.h"
 #include "LD37_OneRoomGameMode.h"
 #include "Log.h"
+#include "OneRoomHUD.h"
 
 AFirstPersonPlayer::AFirstPersonPlayer( const FObjectInitializer& foi )
 {
@@ -15,15 +16,18 @@ AFirstPersonPlayer::AFirstPersonPlayer( const FObjectInitializer& foi )
 	m_lerpSpeed = 2.0f;
 	m_timeLerped = 0.0f;
 	m_timeToLerp = m_lerpSpeed;
+	m_buttonReady = false;
 }
 
 void AFirstPersonPlayer::BeginPlay()
 {
 	Super::BeginPlay();
+	m_pHUD = Cast<AOneRoomHUD>( GetWorld()->GetFirstPlayerController()->GetHUD() );
 }
 
 void AFirstPersonPlayer::SetupPlayerInputComponent( class UInputComponent* InputComponent )
 {
+	Super::SetupPlayerInputComponent( InputComponent );
 	InputComponent->BindAxis( "MoveForward", this, &AFirstPersonPlayer::MoveForward );
     InputComponent->BindAxis( "MoveRight", this, &AFirstPersonPlayer::MoveRight );
 	InputComponent->BindAxis( "HorizontalLook", this, &AFirstPersonPlayer::AddControllerYawInput );
@@ -31,6 +35,7 @@ void AFirstPersonPlayer::SetupPlayerInputComponent( class UInputComponent* Input
 	InputComponent->BindAction( "Jump", IE_Pressed, this, &AFirstPersonPlayer::OnStartJump );
 	InputComponent->BindAction( "Jump", IE_Released, this, &AFirstPersonPlayer::OnStopJump );
 	InputComponent->BindAction( "Interact", IE_Pressed, this, &AFirstPersonPlayer::TestGoal );
+	InputComponent->BindAction( "Quit", IE_Pressed, this, &AFirstPersonPlayer::Quit );
 }
 
 void AFirstPersonPlayer::RoomChange( const Room& roomDesc )
@@ -58,6 +63,28 @@ void AFirstPersonPlayer::Tick( float DeltaTime )
 			Log::LogStr( "Lerp successful" );
 			m_updateLocation = false;
 			SetActorEnableCollision( true );
+		}
+	}
+
+	if ( m_pGoal )
+	{
+		FVector goalPos = m_pGoal->GetActorLocation();
+		FVector pos = GetActorLocation();
+		FVector delta = goalPos - pos;
+		
+		if ( delta.SizeSquared() <= 14400.0f )
+		{
+			delta.Normalize();
+			float dot = FVector::DotProduct( GetActorForwardVector(), delta );
+			m_buttonReady = dot > 0.7f;
+			//UE_LOG( DebugLog, Log, TEXT( "%f"), dot );
+
+			m_pHUD->ToggleInteractVisibility( m_buttonReady );
+		}
+		else
+		{
+			m_pHUD->ToggleInteractVisibility( false );
+			m_buttonReady = false;
 		}
 	}
 }
@@ -105,28 +132,18 @@ void AFirstPersonPlayer::OnStopJump( void )
 
 void AFirstPersonPlayer::TestGoal( void )
 {
-	Log::LogStr( "Interacting" );
-	
-	if ( m_pGoal )
+	//Log::LogStr( "Interacting" );	
+	if ( m_buttonReady )
 	{
-		Log::LogStr( "Goal exists" );
-		FVector goalPos = m_pGoal->GetActorLocation();
-		FVector pos = GetActorLocation();
-		FVector delta = goalPos - pos;
-		
-		UE_LOG( DebugLog, Log, TEXT( "%f" ), delta.Size() );
-		if ( delta.Size() <= 120.0f )
-		{
-			delta.Normalize();
-			float dot = FVector::DotProduct( GetActorForwardVector(), delta );
-			Log::LogStr( "Close to button" );
-			if ( dot > 0.0f )
-			{
-				//m_pRoom->GenerateRoom();
-				AOneRoomGameMode* p_gamemode = ( AOneRoomGameMode* )( GetWorld()->GetAuthGameMode() );
-				p_gamemode->GenerateRoom();
-				Log::LogStr( "Generating next room" );
-			}
-		}
+		//m_pRoom->GenerateRoom();
+		AOneRoomGameMode* p_gamemode = ( AOneRoomGameMode* )( GetWorld()->GetAuthGameMode() );
+		p_gamemode->GenerateRoom();
+		Log::LogStr( "Generating next room" );
 	}
+}
+
+void AFirstPersonPlayer::Quit( void )
+{
+	Log::LogStr( "Quit" );
+	UKismetSystemLibrary::QuitGame( GetWorld(), GetWorld()->GetFirstPlayerController(), EQuitPreference::Quit );
 }

@@ -5,6 +5,7 @@
 #include "Log.h"
 #include "FirstPersonPlayer.h"
 #include "GoalButtonPanel.h"
+#include "OneRoomHUD.h"
 
 const int AOneRoomGameMode::s_cROOM_COUNT = 3;
 
@@ -12,6 +13,7 @@ AOneRoomGameMode::AOneRoomGameMode( const FObjectInitializer& foi )
 {
 	//PlayerControllerClass = 
 	DefaultPawnClass = AFirstPersonPlayer::StaticClass();
+	HUDClass = AOneRoomHUD::StaticClass();
 }
 
 AOneRoomGameMode::~AOneRoomGameMode( void )
@@ -48,9 +50,11 @@ void AOneRoomGameMode::InitialiseQueue( void )
 
 void AOneRoomGameMode::GenerateRoom( void )
 {
+	m_roomsCompleted++;
 	if ( m_rooms.empty() )
 	{
 		return;
+		
 	}
 
 	Room& nextRoom = m_rooms.front();
@@ -61,6 +65,7 @@ void AOneRoomGameMode::GenerateRoom( void )
 	m_pGoal->UpdateLocation( nextRoom.endPoint );
 	//m_pGoal->RoomChange( true, false, nextRoom.endPoint, FVector( 0.0f, 0.0f, 0.0f ) );
 	m_rooms.pop();
+	m_pHUD->SetPercentage( static_cast<float>( m_roomsCompleted ) / static_cast<float>( s_cROOM_COUNT ) );
 }
 
 void AOneRoomGameMode::InitRoom( void )
@@ -109,6 +114,10 @@ void AOneRoomGameMode::InitRoom( void )
 void AOneRoomGameMode::StartPlay()
 {
 	Super::StartPlay();
+
+	m_roomsCompleted = -1;
+	m_pHUD = Cast<AOneRoomHUD>( GetWorld()->GetFirstPlayerController()->GetHUD() );
+
 	InitialiseQueue();
 	InitRoom();
 }

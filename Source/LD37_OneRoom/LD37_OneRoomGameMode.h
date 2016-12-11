@@ -4,6 +4,7 @@
 
 #include <vector>
 #include <queue>
+
 #include "GameFramework/GameMode.h"
 #include "LD37_OneRoomGameMode.generated.h"
 
@@ -32,6 +33,8 @@ struct Room
 class ARoom;
 class AFirstPersonPlayer;
 class AGoalButtonPanel;
+class AOneRoomHUD;
+
 /**
  * 
  */
@@ -39,11 +42,14 @@ UCLASS()
 class LD37_ONEROOM_API AOneRoomGameMode : public AGameMode
 {
 	GENERATED_BODY()
+
 private:
+	int m_roomsCompleted;
 	static const int s_cROOM_COUNT;
 	ARoom* m_pRoomObj = nullptr;
 	AGoalButtonPanel* m_pGoal = nullptr;
 	AFirstPersonPlayer* m_pPlayer = nullptr;
+	AOneRoomHUD* m_pHUD = nullptr;
 
 	std::queue<Room> m_rooms;
 	float m_timeLimit;
