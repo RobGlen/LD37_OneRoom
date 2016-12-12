@@ -44,6 +44,7 @@ void ARoomActor::UpdateScale( FVector scale )
 void ARoomActor::Tick( float DeltaTime )
 {
 	Super::Tick( DeltaTime );
+	LerpScale( DeltaTime ); 
 }
 
 void ARoomActor::LerpLocation( float DeltaTime )
@@ -61,7 +62,6 @@ void ARoomActor::LerpScale( float DeltaTime )
 	{
 		SetActorScale3D( m_currentTransform.scale );
 		Lerp( m_currentTransform.scale, m_targetTransform.scale, m_updateScale, DeltaTime );
-		//Log::LogStr( "HAPS3" );
 	}
 }
 
