@@ -35,8 +35,11 @@ void ARoom::DetermineObstacles( std::vector<Obstacle>& obstacles )
 {
 	for ( std::vector<ARoomActor*>::iterator itr = m_obstacles.begin(); itr != m_obstacles.end(); ++itr )
 	{
+		( *itr )->SetActorLocation( FVector( 0.0f, 0.0f, -5000.0f ) );
 		( *itr )->SetActorScale3D( FVector( 0.0f, 0.0f, 0.0f ) );
 		( *itr )->SetActorEnableCollision( false );
+		//( *itr )-
+		
 	}
 
 	for ( int i = 0; i < obstacles.size(); ++i )

@@ -7,7 +7,7 @@
 #include "GoalButtonPanel.h"
 #include "OneRoomHUD.h"
 
-const int AOneRoomGameMode::s_cROOM_COUNT = 6;
+const int AOneRoomGameMode::s_cROOM_COUNT = 5;
 
 AOneRoomGameMode::AOneRoomGameMode( const FObjectInitializer& foi )
 {
@@ -42,25 +42,24 @@ void AOneRoomGameMode::InitialiseQueue( void )
 	rooms[2].scale = 		FVector( 5.0f, 5.0f, 40.0f );
 	rooms[2].timeLimit = 	20.0f;
 
-	rooms[3].startPoint = 	FVector( -100.0f, 0.0f, 0.0f );
+	rooms[3].startPoint = 	FVector( -200.0f, 200.0f, 0.0f );
 	rooms[3].orientation = 	FRotator( 0.0f, 0.0f, 0.0f );
 	rooms[3].endPoint = 	FVector( 300.0f, 0.0f, -100.0f );
 	rooms[3].scale = 		FVector( 40.0f, 40.0f, 5.0f );
-	Obstacle ob = { OBJSTACLETYPE_BOX, FVector( 300.0f, 0.0f, -200.0f ), FVector( 2.0f, 2.0f, 1.0f ) };
+	Obstacle ob = { OBSTACLETYPE_BOX, FVector( 300.0f, 0.0f, -200.0f ), FVector( 2.0f, 2.0f, 1.0f ) };
 	rooms[3].obstacles.push_back( ob );
 	rooms[3].timeLimit = 	12.0f;
 
-	rooms[0].startPoint = 	FVector( -100.0f, 0.0f, 0.0f );
-	rooms[0].orientation = 	FRotator( 0.0f, 0.0f, 0.0f );
-	rooms[0].endPoint = 	FVector( 600.0f, 0.0f, -930.0f );
-	rooms[0].scale = 		FVector( 60.0f, 60.0f, 20.0f );
-	Obstacle ob1 = { OBJSTACLETYPE_BOX, FVector( 600.0f, 0.0f, -960.0f ), FVector( 2.0f, 2.0f, 2.0f ) };
-	Obstacle ob2 = { OBJSTACLETYPE_BOX, FVector( 300.0f, 0.0f, -960.0f ), FVector( 8.0f, 8.0f, 1.0f ) };
-	Obstacle ob3 = { OBJSTACLETYPE_BOX, FVector( 300.0f, 0.0f, -200.0f ), FVector( 2.0f, 2.0f, 1.0f ) };
-	rooms[0].obstacles.push_back( ob1 );
-	rooms[0].obstacles.push_back( ob2 );
-	rooms[0].obstacles.push_back( ob3 );
-	rooms[0].timeLimit = 	12.0f;
+	rooms[4].startPoint = 	FVector( -900.0f, 0.0f, -165.0f );
+	rooms[4].orientation = 	FRotator( 0.0f, 0.0f, 0.0f );
+	rooms[4].endPoint = 	FVector( 920.0f, 0.0f, -780.0f );
+	rooms[4].scale = 		FVector( 60.0f, 60.0f, 20.0f );
+	Obstacle ob1 = { OBSTACLETYPE_BOX, FVector( 920.0f, 0.0f, -930.0f ), FVector( 2.0f, 2.0f, 2.0f ) };
+	Obstacle ob2 = { OBSTACLETYPE_BOX, FVector( 300.0f, 0.0f, -950.0f ), FVector( 8.0f, 8.0f, 1.0f ) };
+	//Obstacle ob3 = { OBJSTACLETYPE_BOX, FVector( 300.0f, 0.0f, -200.0f ), FVector( 2.0f, 2.0f, 1.0f ) };
+	rooms[4].obstacles.push_back( ob1 );
+	rooms[4].obstacles.push_back( ob2 );
+	rooms[4].timeLimit = 	12.0f;
 
 	for ( unsigned int i = 0; i < s_cROOM_COUNT; ++i )
 	{
@@ -81,10 +80,11 @@ void AOneRoomGameMode::GenerateRoom( void )
 	if ( m_rooms.empty() )
 	{
 		return;
-		
 	}
 
-	Room& nextRoom = m_rooms.front();
+	Room nextRoom = m_rooms.front();
+	//UE_LOG( DebugLog, Log, TEXT( "%f, %f, %f" ), nextRoom.startPoint.X, nextRoom.startPoint.Y, nextRoom.startPoint.Z );
+	//UE_LOG( DebugLog, Log, TEXT( "%f" ), m_rooms.size() );
 	//m_pRoomObj->InitRoom( nextRoom );
 	m_pRoomObj->UpdateScale( nextRoom.scale );
 	m_pRoomObj->DetermineObstacles( nextRoom.obstacles );
@@ -93,6 +93,7 @@ void AOneRoomGameMode::GenerateRoom( void )
 	m_pPlayer->RoomChange( nextRoom );
 	m_pGoal->UpdateLocation( nextRoom.endPoint );
 	//m_pGoal->RoomChange( true, false, nextRoom.endPoint, FVector( 0.0f, 0.0f, 0.0f ) );
+	m_rooms.push( nextRoom );
 	m_rooms.pop();
 	
 }
